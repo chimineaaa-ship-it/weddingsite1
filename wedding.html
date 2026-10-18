@@ -1,0 +1,779 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Wedding Website</title>
+<meta name="description" content="Join us as we celebrate our wedding day." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   1. DESIGN TOKENS — change these to re-skin the whole site
+   ============================================================ */
+:root {
+  --cream:        #faf7f2;
+  --cream-deep:   #f3ede3;
+  --ink:          #2f2a26;
+  --ink-soft:     #6b625a;
+  --sage:         #8a9a7b;
+  --sage-dark:    #6f8062;
+  --blush:        #d9a5a0;
+  --gold:         #c2a878;
+  --white:        #ffffff;
+  --line:         rgba(47, 42, 38, 0.12);
+
+  --serif: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --sans:  "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --max:        1140px;
+  --max-narrow: 720px;
+  --radius:     4px;
+  --radius-lg:  14px;
+  --section-y:  clamp(4rem, 9vw, 8rem);
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* ============================================================
+   2. RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; font-family: var(--sans); font-weight: 300; font-size: 1rem;
+  line-height: 1.75; color: var(--ink); background: var(--cream); overflow-x: hidden;
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; cursor: pointer; }
+ul { list-style: none; margin: 0; padding: 0; }
+
+h1, h2, h3, h4 { font-family: var(--serif); font-weight: 400; line-height: 1.15; margin: 0; letter-spacing: 0.01em; }
+h1 { font-size: clamp(2.75rem, 8vw, 5.5rem); }
+h2 { font-size: clamp(2rem, 5vw, 3.25rem); }
+h3 { font-size: clamp(1.35rem, 3vw, 1.9rem); }
+p  { margin: 0 0 1rem; }
+::selection { background: var(--sage); color: var(--white); }
+
+/* ============================================================
+   3. SHARED UTILITIES
+   ============================================================ */
+.container { width: min(100% - 3rem, var(--max)); margin-inline: auto; }
+.container--narrow { width: min(100% - 3rem, var(--max-narrow)); margin-inline: auto; }
+.section { padding-block: var(--section-y); position: relative; }
+.section--cream  { background: var(--cream); }
+.section--deep   { background: var(--cream-deep); }
+.section--ink    { background: var(--ink); color: var(--cream); }
+
+.eyebrow {
+  font-family: var(--sans); font-size: 0.72rem; font-weight: 500;
+  letter-spacing: 0.32em; text-transform: uppercase; color: var(--sage-dark); margin: 0 0 1rem;
+}
+.section--ink .eyebrow { color: var(--gold); }
+
+.section-head { text-align: center; margin-bottom: clamp(2.5rem, 5vw, 4rem); }
+.section-head p { max-width: 52ch; margin-inline: auto; color: var(--ink-soft); }
+.section--ink .section-head p { color: rgba(255,255,255,0.78); }
+.section-head p.rsvp-intro { font-size: 1.2rem; line-height: 1.6; max-width: none; }
+@media (min-width: 700px) { .section-head p.rsvp-intro { white-space: nowrap; } }
+
+.rule { width: 64px; height: 1px; margin: 1.5rem auto 0; background: var(--gold); border: 0; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+  padding: 0.95rem 2.25rem; font-family: var(--sans); font-size: 0.74rem; font-weight: 500;
+  letter-spacing: 0.22em; text-transform: uppercase; border: 1px solid var(--ink);
+  border-radius: 999px; background: var(--ink); color: var(--cream);
+  transition: background .35s var(--ease), color .35s var(--ease), transform .35s var(--ease), border-color .35s var(--ease);
+}
+.btn:hover { background: transparent; color: var(--ink); transform: translateY(-2px); }
+.btn--light { background: var(--cream); border-color: var(--cream); color: var(--ink); }
+.btn--light:hover { background: transparent; color: var(--cream); }
+.btn--light-ghost { background: transparent; border-color: rgba(255,255,255,.7); color: var(--white); }
+.btn--light-ghost:hover { background: var(--cream); color: var(--ink); border-color: var(--cream); }
+
+/* ============================================================
+   4. NAVIGATION
+   ============================================================ */
+.nav {
+  position: fixed; inset: 0 0 auto 0; z-index: 100; padding: 1.25rem 0;
+  transition: background .4s var(--ease), padding .4s var(--ease), box-shadow .4s var(--ease);
+}
+.nav__inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.nav__brand { font-family: var(--serif); font-size: 1.5rem; letter-spacing: 0.06em; color: var(--white); transition: color .4s var(--ease); }
+.nav__links { display: flex; gap: 2rem; }
+.nav__links a {
+  font-size: 0.72rem; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--white); position: relative; padding-bottom: 4px; transition: color .4s var(--ease);
+}
+.nav__links a::after { content: ""; position: absolute; left: 0; bottom: 0; width: 0; height: 1px; background: currentColor; transition: width .35s var(--ease); }
+.nav__links a:hover::after { width: 100%; }
+.nav.is-scrolled { background: rgba(250, 247, 242, 0.94); backdrop-filter: blur(10px); padding: 0.85rem 0; box-shadow: 0 1px 0 var(--line); }
+.nav.is-scrolled .nav__brand, .nav.is-scrolled .nav__links a { color: var(--ink); }
+.nav__toggle { display: none; background: none; border: 0; padding: 0.5rem; flex-direction: column; gap: 5px; }
+.nav__toggle span { width: 26px; height: 1.5px; background: var(--white); display: block; transition: background .4s var(--ease), transform .3s var(--ease), opacity .3s var(--ease); }
+.nav.is-scrolled .nav__toggle span { background: var(--ink); }
+
+/* ============================================================
+   5. HERO
+   ============================================================ */
+.hero {
+  position: relative; min-height: 100svh; display: grid; place-items: center; text-align: center;
+  color: var(--white); overflow: hidden; padding: 7rem 1.5rem 5rem;
+}
+.hero__bg {
+  position: absolute; inset: 0; z-index: -2; background-color: #a89f92;
+  background-image: linear-gradient(180deg, rgba(30,26,22,.45) 0%, rgba(30,26,22,.30) 45%, rgba(30,26,22,.62) 100%);
+  background-size: cover; background-position: center;
+  transform: scale(1.04); animation: heroZoom 18s var(--ease) forwards;
+}
+@keyframes heroZoom { to { transform: scale(1); } }
+.hero__inner { max-width: 860px; }
+.hero__eyebrow { font-size: 0.72rem; font-weight: 500; letter-spacing: 0.42em; text-transform: uppercase; color: rgba(255,255,255,.85); margin-bottom: 1.5rem; }
+.hero__names { font-family: var(--serif); font-weight: 300; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.4rem 1.25rem; }
+.hero__names .amp { font-style: italic; color: var(--gold); font-size: 0.55em; line-height: 1; }
+.hero__meta { margin-top: 2rem; font-size: 0.82rem; letter-spacing: 0.28em; text-transform: uppercase; color: rgba(255,255,255,.9); }
+.hero__meta .dot { color: var(--gold); margin: 0 0.6rem; }
+.hero__cta { margin-top: 2.75rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+.countdown { display: flex; justify-content: center; gap: clamp(1.25rem, 5vw, 3rem); margin-top: 3.5rem; }
+.countdown__unit { text-align: center; min-width: 58px; }
+.countdown__num { font-family: var(--serif); font-size: clamp(1.9rem, 5vw, 3rem); line-height: 1; display: block; }
+.countdown__label { font-size: 0.6rem; letter-spacing: 0.24em; text-transform: uppercase; color: rgba(255,255,255,.7); margin-top: 0.5rem; display: block; }
+.scroll-hint { position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(255,255,255,.7); }
+.scroll-hint::after { content: ""; display: block; width: 1px; height: 42px; margin: 0.75rem auto 0; background: linear-gradient(var(--gold), transparent); animation: hintPulse 2.2s ease-in-out infinite; }
+@keyframes hintPulse { 0%,100% { opacity: .3; } 50% { opacity: 1; } }
+
+/* ============================================================
+   6. STORY
+   ============================================================ */
+.story { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 6vw, 5rem); align-items: center; }
+.story__media { position: relative; }
+.story__media img { border-radius: var(--radius-lg); aspect-ratio: 4/5; object-fit: cover; width: 100%; }
+.story__media::before { content: ""; position: absolute; inset: 18px -18px -18px 18px; border: 1px solid var(--gold); border-radius: var(--radius-lg); z-index: -1; }
+.story__body h2 { margin-bottom: 1.25rem; }
+.story__body p { color: var(--ink-soft); }
+.story__quote { font-family: var(--serif); font-style: italic; font-size: 1.3rem; color: var(--sage-dark); border-left: 2px solid var(--gold); padding-left: 1.25rem; margin: 1.75rem 0; }
+
+/* ============================================================
+   7. DETAILS (cards)
+   ============================================================ */
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.75rem; }
+.card {
+  background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-lg);
+  padding: 2.5rem 2rem; text-align: center;
+  transition: transform .4s var(--ease), box-shadow .4s var(--ease), border-color .4s var(--ease);
+}
+.card:hover { transform: translateY(-6px); box-shadow: 0 22px 45px -28px rgba(47,42,38,.45); border-color: transparent; }
+.card__icon { width: 52px; height: 52px; margin: 0 auto 1.25rem; display: grid; place-items: center; border-radius: 50%; background: var(--cream-deep); color: var(--sage-dark); }
+.card__icon svg { width: 24px; height: 24px; }
+.card h3 { margin-bottom: 0.75rem; }
+.card p { color: var(--ink-soft); font-size: 0.95rem; margin-bottom: 0.35rem; }
+.card__label { font-size: 0.66rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--sage-dark); display: block; margin-top: 1.25rem; }
+
+/* ============================================================
+   8. SCHEDULE / TIMELINE
+   ============================================================ */
+.timeline { max-width: 760px; margin-inline: auto; position: relative; }
+.timeline::before { content: ""; position: absolute; left: 78px; top: 8px; bottom: 8px; width: 1px; background: linear-gradient(var(--gold), var(--line)); }
+.timeline__item { display: grid; grid-template-columns: 78px 1fr; gap: 2rem; padding-bottom: 2.75rem; position: relative; }
+.timeline__item:last-child { padding-bottom: 0; }
+.timeline__time { font-family: var(--serif); font-size: 1.15rem; text-align: right; color: var(--gold); padding-top: 0.15rem; }
+.timeline__body { position: relative; padding-left: 2rem; }
+.timeline__body::before { content: ""; position: absolute; left: -6px; top: 10px; width: 11px; height: 11px; border-radius: 50%; background: var(--cream); border: 2px solid var(--sage); }
+.timeline__body h3 { margin-bottom: 0.35rem; }
+.timeline__body p { color: var(--ink-soft); font-size: 0.95rem; margin: 0; }
+
+/* ============================================================
+   9. GALLERY
+   ============================================================ */
+.gallery { display: grid; gap: 0.85rem; grid-template-columns: repeat(4, 1fr); grid-auto-rows: 190px; }
+.gallery a { overflow: hidden; border-radius: var(--radius); display: block; position: relative; height: 100%; }
+.gallery img { width: 100%; height: 100%; object-fit: cover; transition: transform .8s var(--ease), filter .8s var(--ease); }
+.gallery a:hover img { transform: scale(1.07); filter: brightness(1.06); }
+.gallery .g-tall { grid-row: span 2; }
+.gallery .g-wide { grid-column: span 2; }
+
+/* ============================================================
+   10. RSVP FORM
+   ============================================================ */
+.rsvp { max-width: 640px; margin-inline: auto; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+.field { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.25rem; }
+.field--full { grid-column: 1 / -1; }
+.field label { font-size: 0.68rem; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-soft); }
+.section--ink .field label { color: rgba(255,255,255,.7); }
+.field input, .field select, .field textarea {
+  font-family: var(--sans); font-size: 0.95rem; font-weight: 300; padding: 0.85rem 1rem;
+  border: 1px solid var(--line); border-radius: var(--radius); background: var(--white); color: var(--ink); width: 100%;
+  transition: border-color .3s var(--ease), box-shadow .3s var(--ease);
+}
+.field textarea { resize: vertical; min-height: 120px; }
+.field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--sage); box-shadow: 0 0 0 3px rgba(138,154,123,.18); }
+.form-note { font-size: 0.8rem; color: var(--ink-soft); margin-top: 1rem; text-align: center; }
+.section--ink .form-note { color: rgba(255,255,255,.6); }
+.form-success { display: none; text-align: center; padding: 3rem 1rem; }
+.form-success.is-visible { display: block; animation: fadeUp .6s var(--ease) both; }
+.form-success h3 { color: var(--gold); margin-bottom: 0.75rem; }
+
+/* ============================================================
+   11. REGISTRY / FOOTER
+   ============================================================ */
+.registry-links { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem; }
+.footer { background: var(--ink); color: rgba(250,247,242,.75); text-align: center; padding: 4rem 1.5rem 3rem; }
+.footer__names { font-family: var(--serif); font-size: 1.75rem; color: var(--cream); margin-bottom: 0.5rem; }
+.footer__date { font-size: 0.72rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--gold); }
+.footer__social { display: flex; gap: 1.5rem; justify-content: center; margin: 2rem 0; }
+.footer__social a { width: 42px; height: 42px; display: grid; place-items: center; border: 1px solid rgba(250,247,242,.25); border-radius: 50%; transition: background .35s var(--ease), border-color .35s var(--ease), color .35s var(--ease); }
+.footer__social a:hover { background: var(--gold); border-color: var(--gold); color: var(--ink); }
+.footer__social svg { width: 17px; height: 17px; }
+.footer__copy { font-size: 0.72rem; color: rgba(250,247,242,.45); margin-top: 1.5rem; }
+
+/* ============================================================
+   12. SCROLL REVEAL
+   ============================================================ */
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity .9s var(--ease), transform .9s var(--ease); }
+.reveal.is-in { opacity: 1; transform: none; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
+
+/* ============================================================
+   13. RESPONSIVE
+   ============================================================ */
+@media (max-width: 900px) {
+  .story { grid-template-columns: 1fr; }
+  .story__media { max-width: 460px; margin-inline: auto; }
+  .gallery { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 160px; }
+  .gallery .g-wide { grid-column: span 2; }
+}
+@media (max-width: 720px) {
+  .nav__toggle { display: flex; }
+  .nav__links { position: fixed; inset: 0; flex-direction: column; justify-content: center; align-items: center; gap: 1.75rem; background: var(--cream); transform: translateY(-100%); transition: transform .5s var(--ease); z-index: -1; }
+  .nav__links.is-open { transform: translateY(0); }
+  .nav__links a { color: var(--ink); font-size: 0.85rem; }
+  .nav.is-scrolled .nav__toggle span, .nav__toggle.is-open span { background: var(--ink); }
+  .nav__toggle.is-open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+  .nav__toggle.is-open span:nth-child(2) { opacity: 0; }
+  .nav__toggle.is-open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+  .form-grid { grid-template-columns: 1fr; }
+  .timeline::before { left: 12px; }
+  .timeline__item { grid-template-columns: 1fr; gap: 0.35rem; padding-left: 2.5rem; }
+  .timeline__time { text-align: left; padding-top: 0; }
+  .timeline__body { padding-left: 0; }
+  .timeline__body::before { left: -2.35rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  html { scroll-behavior: auto; }
+  .reveal { opacity: 1; transform: none; }
+}
+
+/* ============================================================
+   14. CUSTOMIZE MODE
+   ============================================================ */
+.editor-bar {
+  position: fixed; left: 50%; bottom: 1.25rem; transform: translateX(-50%);
+  z-index: 9999; display: flex; gap: .5rem; align-items: center;
+  padding: .5rem .6rem; border-radius: 999px;
+  background: rgba(47,42,38,.94); backdrop-filter: blur(8px);
+  box-shadow: 0 14px 40px -12px rgba(0,0,0,.6);
+}
+.editor-btn {
+  border: 0; border-radius: 999px; padding: .6rem 1.15rem;
+  font-family: var(--sans); font-size: .63rem; font-weight: 600;
+  letter-spacing: .16em; text-transform: uppercase;
+  background: var(--gold); color: var(--ink); cursor: pointer;
+  transition: background .25s var(--ease), color .25s var(--ease);
+}
+.editor-btn:hover { background: #d8c08f; }
+.editor-btn--ghost { background: transparent; color: rgba(255,255,255,.82); border: 1px solid rgba(255,255,255,.28); }
+.editor-btn--ghost:hover { background: rgba(255,255,255,.12); color: #fff; }
+.editor-btn[hidden] { display: none; }
+.editor-hint { display: none; color: rgba(255,255,255,.72); font-size: .62rem; letter-spacing: .1em; padding: 0 .5rem; }
+body.is-editing .editor-hint { display: inline; }
+@media (max-width: 640px) { .editor-hint { display: none !important; } }
+
+/* editable text */
+body.is-editing [data-edit] {
+  outline: 1px dashed rgba(194,168,120,.95); outline-offset: 4px;
+  border-radius: 2px; cursor: text; transition: outline-color .2s var(--ease);
+}
+body.is-editing [data-edit]:hover { outline-color: var(--sage); }
+body.is-editing [data-edit]:focus { outline: 2px solid var(--sage); outline-offset: 4px; }
+
+/* photo slots */
+.photo-slot.is-empty {
+  background: repeating-linear-gradient(45deg, #e7e1d8 0, #e7e1d8 10px, #efe9e0 10px, #efe9e0 20px);
+}
+body.is-editing .photo-slot { cursor: pointer; }
+body.is-editing .photo-slot:hover { opacity: .82; }
+body.is-editing .photo-slot.is-empty::after {
+  content: "＋ Add photo"; position: absolute; inset: 0; display: grid; place-items: center;
+  color: #a99f90; font-size: .6rem; letter-spacing: .2em; text-transform: uppercase;
+  pointer-events: none;
+}
+.gallery a { position: relative; }
+</style>
+</head>
+<body>
+
+<!-- ============ CUSTOMIZE TOOLBAR ============ -->
+<div class="editor-bar">
+  <button type="button" class="editor-btn" id="editToggle">Customize</button>
+  <button type="button" class="editor-btn editor-btn--ghost" id="bgBtn" hidden>Background photo</button>
+  <button type="button" class="editor-btn editor-btn--ghost" id="resetBtn" hidden>Reset</button>
+  <span class="editor-hint">Click any text to edit &bull; Click a photo to replace it</span>
+</div>
+
+<!-- ============ NAV ============ -->
+<header class="nav" id="nav">
+  <div class="container nav__inner">
+    <a href="#top" class="nav__brand" data-edit="brand">A &amp; J</a>
+    <nav>
+      <ul class="nav__links" id="navLinks">
+        <li><a href="#story">Our Story</a></li>
+        <li><a href="#details">Details</a></li>
+        <li><a href="#schedule">Schedule</a></li>
+        <li><a href="#gallery">Gallery</a></li>
+        <li><a href="#rsvp">RSVP</a></li>
+      </ul>
+    </nav>
+    <button class="nav__toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="top">
+  <div class="hero__bg" id="heroBg"></div>
+  <div class="hero__inner">
+    <p class="hero__eyebrow" data-edit="heroEyebrow">We're getting married</p>
+    <h1 class="hero__names" data-edit="heroNames">
+      <span>Alex</span>
+      <span class="amp">&amp;</span>
+      <span>Jordan</span>
+    </h1>
+    <p class="hero__meta" data-edit="heroMeta">
+      September 21, 2026 <span class="dot">&bull;</span> Willow Creek Estate <span class="dot">&bull;</span> Napa Valley
+    </p>
+    <div class="countdown" id="countdown" aria-label="Countdown to wedding day">
+      <div class="countdown__unit"><span class="countdown__num" data-unit="days">--</span><span class="countdown__label">Days</span></div>
+      <div class="countdown__unit"><span class="countdown__num" data-unit="hours">--</span><span class="countdown__label">Hours</span></div>
+      <div class="countdown__unit"><span class="countdown__num" data-unit="minutes">--</span><span class="countdown__label">Minutes</span></div>
+      <div class="countdown__unit"><span class="countdown__num" data-unit="seconds">--</span><span class="countdown__label">Seconds</span></div>
+    </div>
+    <div class="hero__cta">
+      <a href="#rsvp" class="btn btn--light">RSVP Now</a>
+      <a href="#details" class="btn btn--light-ghost">Wedding Details</a>
+    </div>
+  </div>
+  <div class="scroll-hint">Scroll</div>
+</section>
+
+<!-- ============ STORY ============ -->
+<section class="section section--cream" id="story">
+  <div class="container">
+    <div class="story">
+      <div class="story__media reveal">
+        <img class="photo-slot is-empty" data-photo="story" alt="The couple together"
+             src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
+      </div>
+      <div class="story__body reveal">
+        <p class="eyebrow" data-edit="storyEyebrow">Our Story</p>
+        <h2 data-edit="storyHeading">From a chance meeting to forever</h2>
+        <div data-edit="storyBody">
+          <p>It started with a shared table at a tiny café and a conversation that lasted until closing time. Six years, two cities, and one very opinionated dog later, we're ready to say "I do."</p>
+          <p>We can't wait to celebrate this next chapter surrounded by the people who shaped us. Thank you for being part of our story.</p>
+        </div>
+        <p class="story__quote" data-edit="storyQuote">"Whatever our souls are made of, his and mine are the same."</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DETAILS ============ -->
+<section class="section section--deep" id="details">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow" data-edit="detailsEyebrow">The Details</p>
+      <h2 data-edit="detailsHeading">Everything you need to know</h2>
+      <hr class="rule" />
+    </div>
+    <div class="cards">
+      <article class="card reveal" data-edit="card1">
+        <div class="card__icon" data-noedit>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 21s-7-4.35-7-10a7 7 0 0 1 14 0c0 5.65-7 10-7 10z"/><circle cx="12" cy="11" r="2.5"/></svg>
+        </div>
+        <h3>Ceremony</h3>
+        <p>Willow Creek Estate Gardens</p>
+        <p>4:30 in the afternoon</p>
+        <span class="card__label">September 21, 2026</span>
+      </article>
+      <article class="card reveal" data-edit="card2">
+        <div class="card__icon" data-noedit>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 3v18M5 8h14M19 3v18M9 8v13M15 8v13"/></svg>
+        </div>
+        <h3>Reception</h3>
+        <p>The Grand Barn</p>
+        <p>Dinner, dancing &amp; toasts</p>
+        <span class="card__label">6:00 PM &ndash; Midnight</span>
+      </article>
+      <article class="card reveal" data-edit="card3">
+        <div class="card__icon" data-noedit>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/></svg>
+        </div>
+        <h3>Accommodations</h3>
+        <p>A block of rooms is reserved</p>
+        <p>at The Vineyard Inn</p>
+        <span class="card__label">Mention "Alex &amp; Jordan"</span>
+      </article>
+      <article class="card reveal" data-edit="card4">
+        <div class="card__icon" data-noedit>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l2.4 6.9H21l-5.3 4 2 6.9L12 15.8 6.3 19.8l2-6.9L3 8.9h6.6z"/></svg>
+        </div>
+        <h3>Dress Code</h3>
+        <p>Garden formal</p>
+        <p>Earth tones encouraged</p>
+        <span class="card__label">Ceremony is outdoors</span>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SCHEDULE ============ -->
+<section class="section section--cream" id="schedule">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow" data-edit="scheduleEyebrow">The Day</p>
+      <h2 data-edit="scheduleHeading">Order of events</h2>
+      <hr class="rule" />
+    </div>
+    <div class="timeline">
+      <div class="timeline__item reveal" data-edit="sched1">
+        <div class="timeline__time">4:00 PM</div>
+        <div class="timeline__body"><h3>Guest Arrival</h3><p>Welcome drinks on the garden terrace.</p></div>
+      </div>
+      <div class="timeline__item reveal" data-edit="sched2">
+        <div class="timeline__time">4:30 PM</div>
+        <div class="timeline__body"><h3>Ceremony</h3><p>Please be seated by 4:25 PM.</p></div>
+      </div>
+      <div class="timeline__item reveal" data-edit="sched3">
+        <div class="timeline__time">5:15 PM</div>
+        <div class="timeline__body"><h3>Cocktail Hour</h3><p>Canapés, cocktails &amp; live music.</p></div>
+      </div>
+      <div class="timeline__item reveal" data-edit="sched4">
+        <div class="timeline__time">6:30 PM</div>
+        <div class="timeline__body"><h3>Dinner &amp; Toasts</h3><p>A seated three-course dinner in the barn.</p></div>
+      </div>
+      <div class="timeline__item reveal" data-edit="sched5">
+        <div class="timeline__time">8:00 PM</div>
+        <div class="timeline__body"><h3>First Dance &amp; Party</h3><p>Dancing until midnight.</p></div>
+      </div>
+      <div class="timeline__item reveal" data-edit="sched6">
+        <div class="timeline__time">11:45 PM</div>
+        <div class="timeline__body"><h3>Send-Off</h3><p>Join us outside for a sparkler farewell.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ GALLERY ============ -->
+<section class="section section--deep" id="gallery">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow" data-edit="galleryEyebrow">Moments</p>
+      <h2 data-edit="galleryHeading">Our favourite memories</h2>
+      <hr class="rule" />
+    </div>
+    <div class="gallery reveal">
+      <a href="#" class="g-tall"><img class="photo-slot is-empty" data-photo="g1" alt="Gallery photo 1" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" /></a>
+      <a href="#" class="g-wide"><img class="photo-slot is-empty" data-photo="g2" alt="Gallery photo 2" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" /></a>
+      <a href="#"><img class="photo-slot is-empty" data-photo="g3" alt="Gallery photo 3" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" /></a>
+      <a href="#"><img class="photo-slot is-empty" data-photo="g4" alt="Gallery photo 4" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" /></a>
+      <a href="#"><img class="photo-slot is-empty" data-photo="g5" alt="Gallery photo 5" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" /></a>
+      <a href="#" class="g-wide"><img class="photo-slot is-empty" data-photo="g6" alt="Gallery photo 6" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" /></a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RSVP ============ -->
+<section class="section section--ink" id="rsvp">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow" data-edit="rsvpEyebrow">Join Us</p>
+      <h2 data-edit="rsvpHeading">Kindly reply</h2>
+      <p class="rsvp-intro" data-edit="rsvpIntro">Please respond by August 1, 2026 so we can finalize seating and catering.</p>
+    </div>
+
+    <form class="rsvp" id="rsvpForm" novalidate>
+      <div class="form-grid">
+        <div class="field">
+          <label for="fname">First Name</label>
+          <input type="text" id="fname" name="fname" required autocomplete="given-name" />
+        </div>
+        <div class="field">
+          <label for="lname">Last Name</label>
+          <input type="text" id="lname" name="lname" required autocomplete="family-name" />
+        </div>
+        <div class="field field--full">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" name="email" required autocomplete="email" />
+        </div>
+        <div class="field">
+          <label for="attending">Will you attend?</label>
+          <select id="attending" name="attending" required>
+            <option value="">Select&hellip;</option>
+            <option value="yes">Joyfully accepts</option>
+            <option value="no">Regretfully declines</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="guests">Number of Guests</label>
+          <select id="guests" name="guests">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+          </select>
+        </div>
+        <div class="field field--full">
+          <label for="message">Dietary Needs or a Note</label>
+          <textarea id="message" name="message" placeholder="Let us know about allergies, song requests, or a message for the couple&hellip;"></textarea>
+        </div>
+      </div>
+      <div style="text-align:center">
+        <button type="submit" class="btn btn--light">Send RSVP</button>
+      </div>
+      <p class="form-note" data-edit="rsvpNote">We'll confirm your response by email within a few days.</p>
+    </form>
+
+    <div class="form-success" id="formSuccess" role="status" aria-live="polite">
+      <h3 data-edit="successHeading">Thank you!</h3>
+      <p data-edit="successText">Your RSVP has been received. We can't wait to celebrate with you.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer" id="registry">
+  <div class="container--narrow">
+    <p class="footer__names" data-edit="footerNames">Alex &amp; Jordan</p>
+    <p class="footer__date" data-edit="footerDate">09 &middot; 21 &middot; 2026</p>
+    <p style="margin-top:1.5rem" data-edit="registryNote">Your presence is the greatest gift. If you wish to give, we've registered at the links below.</p>
+    <div class="registry-links">
+      <a href="#" class="btn btn--light-ghost">Registry One</a>
+      <a href="#" class="btn btn--light-ghost">Registry Two</a>
+    </div>
+    <div class="footer__social">
+      <a href="#" aria-label="Instagram">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+      </a>
+      <a href="#" aria-label="Email">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+      </a>
+      <a href="#" aria-label="Photo album">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M4 18l5-4 4 3 3-2 4 3"/></svg>
+      </a>
+    </div>
+    <p class="footer__copy" data-edit="footerCopy">Made with love &bull; #AlexAndJordan2026</p>
+  </div>
+</footer>
+
+<script>
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+(function () {
+  var nav = document.getElementById('nav');
+  var toggle = document.getElementById('navToggle');
+  var links = document.getElementById('navLinks');
+  function onScroll() { nav.classList.toggle('is-scrolled', window.scrollY > 60); }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+  toggle.addEventListener('click', function () {
+    var open = links.classList.toggle('is-open');
+    toggle.classList.toggle('is-open', open);
+    toggle.setAttribute('aria-expanded', String(open));
+    document.body.style.overflow = open ? 'hidden' : '';
+  });
+  links.querySelectorAll('a').forEach(function (a) {
+    a.addEventListener('click', function () {
+      links.classList.remove('is-open');
+      toggle.classList.remove('is-open');
+      toggle.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    });
+  });
+})();
+
+/* ============================================================
+   COUNTDOWN — change the date here
+   ============================================================ */
+(function () {
+  var target = new Date('2026-09-21T16:30:00');
+  var el = document.getElementById('countdown');
+  if (!el) return;
+  function pad(n) { return String(n).padStart(2, '0'); }
+  function tick() {
+    var diff = target - new Date();
+    if (diff <= 0) { el.innerHTML = '<p style="font-family:var(--serif);font-size:1.6rem;margin:0">Today is the day!</p>'; return; }
+    var s = Math.floor(diff / 1000);
+    var vals = { days: Math.floor(s / 86400), hours: Math.floor((s % 86400) / 3600), minutes: Math.floor((s % 3600) / 60), seconds: s % 60 };
+    Object.keys(vals).forEach(function (k) {
+      var node = el.querySelector('[data-unit="' + k + '"]');
+      if (node) node.textContent = k === 'days' ? vals[k] : pad(vals[k]);
+    });
+  }
+  tick();
+  setInterval(tick, 1000);
+})();
+
+/* ============================================================
+   SCROLL REVEAL
+   ============================================================ */
+(function () {
+  var items = document.querySelectorAll('.reveal');
+  if (!('IntersectionObserver' in window)) { items.forEach(function (i) { i.classList.add('is-in'); }); return; }
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.14, rootMargin: '0px 0px -40px 0px' });
+  items.forEach(function (i) { io.observe(i); });
+})();
+
+/* ============================================================
+   RSVP FORM
+   ============================================================ */
+(function () {
+  var form = document.getElementById('rsvpForm');
+  var success = document.getElementById('formSuccess');
+  if (!form) return;
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (!form.checkValidity()) { form.reportValidity(); return; }
+    form.style.display = 'none';
+    success.classList.add('is-visible');
+  });
+})();
+
+/* ============================================================
+   CUSTOMIZE MODE
+   - Edit text, replace photos, set the hero background.
+   - Changes are saved in this browser (localStorage).
+   ============================================================ */
+(function () {
+  var KEY = 'weddingSite_v1';
+  var body = document.body;
+  var editToggle = document.getElementById('editToggle');
+  var bgBtn = document.getElementById('bgBtn');
+  var resetBtn = document.getElementById('resetBtn');
+  var heroBg = document.getElementById('heroBg');
+
+  var picker = document.createElement('input');
+  picker.type = 'file'; picker.accept = 'image/*'; picker.style.display = 'none';
+  document.body.appendChild(picker);
+  var onPick = null;
+
+  function openPicker(cb) { onPick = cb; picker.value = ''; picker.click(); }
+  picker.addEventListener('change', function () {
+    var f = picker.files && picker.files[0];
+    if (!f || !onPick) return;
+    var reader = new FileReader();
+    reader.onload = function (e) { onPick(e.target.result); onPick = null; save(); };
+    reader.readAsDataURL(f);
+  });
+
+  function collect() {
+    var data = { text: {}, photos: {}, bg: null };
+    document.querySelectorAll('[data-edit]').forEach(function (el) {
+      data.text[el.getAttribute('data-edit')] = el.innerHTML;
+    });
+    document.querySelectorAll('img[data-photo]').forEach(function (img) {
+      if (!img.classList.contains('is-empty')) data.photos[img.getAttribute('data-photo')] = img.getAttribute('src');
+    });
+    if (heroBg.dataset.customBg) data.bg = heroBg.dataset.customBg;
+    return data;
+  }
+
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(collect())); }
+    catch (e) { console.warn('Could not save — a photo may be too large for browser storage.', e); }
+  }
+
+  function applyBg(url) {
+    heroBg.dataset.customBg = url;
+    heroBg.style.backgroundImage =
+      'linear-gradient(180deg, rgba(30,26,22,.45) 0%, rgba(30,26,22,.30) 45%, rgba(30,26,22,.62) 100%), url("' + url + '")';
+    heroBg.style.backgroundSize = 'cover';
+    heroBg.style.backgroundPosition = 'center';
+  }
+
+  function load() {
+    var raw = null;
+    try { raw = localStorage.getItem(KEY); } catch (e) {}
+    if (!raw) return;
+    var data; try { data = JSON.parse(raw); } catch (e) { return; }
+    if (data.text) {
+      Object.keys(data.text).forEach(function (k) {
+        var el = document.querySelector('[data-edit="' + k + '"]');
+        if (el) el.innerHTML = data.text[k];
+      });
+    }
+    if (data.photos) {
+      Object.keys(data.photos).forEach(function (k) {
+        var img = document.querySelector('img[data-photo="' + k + '"]');
+        if (img) { img.src = data.photos[k]; img.classList.remove('is-empty'); }
+      });
+    }
+    if (data.bg) applyBg(data.bg);
+  }
+
+  function setEditing(on) {
+    body.classList.toggle('is-editing', on);
+    editToggle.textContent = on ? 'Done' : 'Customize';
+    bgBtn.hidden = !on;
+    resetBtn.hidden = !on;
+    document.querySelectorAll('[data-edit]').forEach(function (el) {
+      el.setAttribute('contenteditable', on ? 'true' : 'false');
+    });
+    if (!on) save();
+  }
+
+  editToggle.addEventListener('click', function () {
+    setEditing(!body.classList.contains('is-editing'));
+  });
+
+  resetBtn.addEventListener('click', function () {
+    if (!confirm('Reset all your changes back to the original template?')) return;
+    try { localStorage.removeItem(KEY); } catch (e) {}
+    location.reload();
+  });
+
+  bgBtn.addEventListener('click', function () {
+    openPicker(function (url) { applyBg(url); });
+  });
+
+  document.addEventListener('click', function (e) {
+    if (!body.classList.contains('is-editing')) return;
+    var img = e.target.closest('img[data-photo]');
+    if (img) {
+      e.preventDefault();
+      openPicker(function (url) { img.src = url; img.classList.remove('is-empty'); });
+    }
+  });
+
+  // autosave while typing
+  var t = null;
+  document.addEventListener('input', function (e) {
+    if (!body.classList.contains('is-editing')) return;
+    if (!e.target.closest || !e.target.closest('[data-edit]')) return;
+    clearTimeout(t); t = setTimeout(save, 500);
+  });
+
+  load();
+})();
+</script>
+</body>
+</html>

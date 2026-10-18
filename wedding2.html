@@ -471,6 +471,14 @@ body.is-editing .frame-controls, body.is-editing .box-controls, body.is-editing 
   var EMPTY = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
   var site = document.getElementById('site');
 
+  function normalizeDateString(raw) {
+    if (raw === undefined || raw === null) return '';
+    var str = String(raw).trim();
+    if (!str) return '';
+    str = str.replace(/^(\d{4}):(\d{2})\s*-\s*(\d{2})/, '$1-$2-$3');
+    return str;
+  }
+
   /* ===== RESTORE ===== */
   (function restore() {
     if (window.WEDDING_CONFIG && window.WEDDING_CONFIG.exported) return;
@@ -479,7 +487,7 @@ body.is-editing .frame-controls, body.is-editing .box-controls, body.is-editing 
     var d; try { d = JSON.parse(raw); } catch (e) { return; }
     if (d.html) site.innerHTML = d.html;
     if (d.colors) Object.keys(d.colors).forEach(function (k) { document.documentElement.style.setProperty(k, d.colors[k]); });
-    if (d.date) window.WEDDING_CONFIG.date = d.date;
+    if (d.date) window.WEDDING_CONFIG.date = normalizeDateString(d.date);
     if (d.endpoint) window.WEDDING_CONFIG.endpoint = d.endpoint;
   })();
 
@@ -507,7 +515,7 @@ body.is-editing .frame-controls, body.is-editing .box-controls, body.is-editing 
     var el = document.getElementById('countdown'); if (!el) return;
     function pad(n) { return String(n).padStart(2, '0'); }
     function tick() {
-      var target = new Date(window.WEDDING_CONFIG.date);
+      var target = new Date(normalizeDateString(window.WEDDING_CONFIG.date));
       if (isNaN(target)) return;
       var diff = target - new Date();
       var units = el.querySelectorAll('.countdown__unit');
